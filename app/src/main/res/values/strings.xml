@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">GORA Test task</string>
+    <string name="network_issue">No Internet connection.</string>
+</resources>
