@@ -30,7 +30,9 @@ class PhotosRecyclerViewAdapter(private val data: ArrayList<NetworkInstance.Phot
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        viewHolder.pb.visibility = View.INVISIBLE
+        if (data[position].title != null) {
+            viewHolder.pb.visibility = View.INVISIBLE
+        }
         viewHolder.textView.text = data[position].title
         viewHolder.imageView.setImageBitmap(data[position].bm)
     }

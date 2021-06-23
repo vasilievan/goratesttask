@@ -27,7 +27,7 @@ object NetworkInstance {
 
     data class Photo(val title: String, val url_string: String)
 
-    data class PhotoInstance(val title: String, val bm: Bitmap?)
+    data class PhotoInstance(val title: String?, val bm: Bitmap?)
 
     private const val DATA_SERVER = "https://jsonplaceholder.typicode.com"
     private const val USERS_URL_STRING = "$DATA_SERVER/users"
