@@ -6,8 +6,14 @@ import android.content.Intent
 import android.widget.TextView
 
 object SharedData {
+    lateinit var ALBUMS: Map<Int, Set<Int>>
     lateinit var USERS: List<NetworkInstance.User>
     lateinit var APPLICATION_CONTEXT: Context
+    const val NAME = "name"
+    const val ID = "id"
+    const val ALBUM_ID = "albumId"
+    const val TITLE = "title"
+    const val PHOTO_URL = "url"
 
     fun openPhotos(textView: TextView) {
         val intent = Intent(APPLICATION_CONTEXT, Photos::class.java).apply {
