@@ -34,6 +34,4 @@ class UsersRecyclerViewAdapter(private val dataSet: List<NetworkInstance.User>) 
     }
 
     override fun getItemCount() = dataSet.size
-
-
 }

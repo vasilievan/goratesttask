@@ -9,6 +9,8 @@ import aleskey.vasiliev.goratesttask.model.SharedData.NAME
 import aleskey.vasiliev.goratesttask.model.SharedData.PHOTO_URL
 import aleskey.vasiliev.goratesttask.model.SharedData.TITLE
 import android.content.Context.CONNECTIVITY_SERVICE
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.widget.Toast
@@ -18,11 +20,14 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 
+
 object NetworkInstance {
 
     data class User(val id: Int, val name: String)
 
-    data class Photo(val title: String, val url: URL)
+    data class Photo(val title: String, val url_string: String)
+
+    data class PhotoInstance(val title: String, val bm: Bitmap?)
 
     private const val DATA_SERVER = "https://jsonplaceholder.typicode.com"
     private const val USERS_URL_STRING = "$DATA_SERVER/users"
@@ -88,47 +93,48 @@ object NetworkInstance {
             if (albumID in ALBUMS[ID]!!) {
                 val title = currentUserObj.getString(TITLE)
                 val url = currentUserObj.getString(PHOTO_URL)
-                photos.add(Photo(title, URL(url)))
+                photos.add(Photo(title, url))
             }
             index++
         }
         return photos
     }
 
-    private suspend fun getDeferredUserData(): Deferred<List<User>> = withContext(Dispatchers.Default) {
-        async {
-            val usernames: MutableList<User> = mutableListOf()
-            val usersUrl = URL(USERS_URL_STRING)
-            if (isConnectionAvailable()) {
-                with(usersUrl.openConnection() as HttpURLConnection) {
-                    val response = readLines(this)
-                    usernames.addAll(parseUsers(response))
+    private suspend fun getDeferredUserDataAsync(): Deferred<List<User>> =
+        withContext(Dispatchers.Default) {
+            async {
+                val usernames: MutableList<User> = mutableListOf()
+                val usersUrl = URL(USERS_URL_STRING)
+                if (isConnectionAvailable()) {
+                    with(usersUrl.openConnection() as HttpURLConnection) {
+                        val response = readLines(this)
+                        usernames.addAll(parseUsers(response))
+                    }
+                } else {
+                    Toast.makeText(APPLICATION_CONTEXT, network_issue, Toast.LENGTH_LONG).show()
                 }
-            } else {
-                Toast.makeText(APPLICATION_CONTEXT, network_issue, Toast.LENGTH_LONG).show()
+                usernames
             }
-            usernames
         }
-    }
 
-    private suspend fun getDeferredAlbumsData(users: List<User>): Deferred<Map<Int, Set<Int>>> =
+    private suspend fun getDeferredAlbumsDataAsync(users: List<User>): Deferred<Map<Int, Set<Int>>> =
         withContext(Dispatchers.Default) {
             var albums: Map<Int, Set<Int>>? = null
             async {
-            val albumsUrl = URL(ALBUMS_URL_STRING)
-            if (isConnectionAvailable()) {
-                with(albumsUrl.openConnection() as HttpURLConnection) {
-                    val response = readLines(this)
-                    albums = parseAlbums(response)
+                val albumsUrl = URL(ALBUMS_URL_STRING)
+                if (isConnectionAvailable()) {
+                    with(albumsUrl.openConnection() as HttpURLConnection) {
+                        val response = readLines(this)
+                        albums = parseAlbums(response)
+                    }
+                } else {
+                    Toast.makeText(APPLICATION_CONTEXT, network_issue, Toast.LENGTH_LONG).show()
                 }
-            } else {
-                Toast.makeText(APPLICATION_CONTEXT, network_issue, Toast.LENGTH_LONG).show()
+                albums!!
             }
-            albums!!
         }
-    }
 
-    private suspend fun getDeferredPhotosDataByID(ID: Int): Deferred<List<Photo>> =
+    private suspend fun getDeferredPhotosDataByIDAsync(ID: Int): Deferred<List<Photo>> =
         withContext(Dispatchers.Default) {
             var photos: List<Photo>? = null
             async {
@@ -145,15 +151,39 @@ object NetworkInstance {
             }
         }
 
+    private suspend fun loadDeferredPhotoByURLAsync(url_string: String): Deferred<Bitmap> =
+        withContext(Dispatchers.Default) {
+            var myBitmap: Bitmap? = null
+            async {
+                if (isConnectionAvailable()) {
+                    with(URL(url_string).openConnection() as HttpURLConnection) {
+                        this.setRequestProperty(
+                            "User-Agent",
+                            "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2"
+                        )
+                        val input = this.inputStream
+                        myBitmap = BitmapFactory.decodeStream(input)
+                    }
+                } else {
+                    Toast.makeText(APPLICATION_CONTEXT, network_issue, Toast.LENGTH_LONG).show()
+                }
+                myBitmap!!
+            }
+        }
+
     fun getPhotosById(id: Int): List<Photo> = runBlocking {
-        getDeferredPhotosDataByID(id).await()
+        getDeferredPhotosDataByIDAsync(id).await()
     }
 
     fun getUsers(): List<User> = runBlocking {
-        getDeferredUserData().await()
+        getDeferredUserDataAsync().await()
     }
 
     fun getAlbums(users: List<User>): Map<Int, Set<Int>> = runBlocking {
-        getDeferredAlbumsData(users).await()
+        getDeferredAlbumsDataAsync(users).await()
+    }
+
+    fun loadPhotoByURL(url_string: String): Bitmap = runBlocking {
+        loadDeferredPhotoByURLAsync(url_string).await()
     }
 }
