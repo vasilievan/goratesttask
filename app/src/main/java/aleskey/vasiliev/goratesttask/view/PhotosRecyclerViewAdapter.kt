@@ -38,11 +38,11 @@ class PhotosRecyclerViewAdapter(private val data: ArrayList<NetworkInstance.Phot
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         if (data[position].title != null) {
             viewHolder.pb.visibility = View.INVISIBLE
+            viewHolder.imageView.layoutParams.width = PHONE_WIDTH - IMAGE_MARGIN
+            viewHolder.imageView.layoutParams.height = PHONE_WIDTH - IMAGE_MARGIN
         }
         viewHolder.textView.text = data[position].title
         viewHolder.imageView.setImageBitmap(data[position].bm)
-        viewHolder.imageView.layoutParams.width = PHONE_WIDTH - IMAGE_MARGIN
-        viewHolder.imageView.layoutParams.height = PHONE_WIDTH - IMAGE_MARGIN
     }
 
     override fun getItemCount() = data.size
