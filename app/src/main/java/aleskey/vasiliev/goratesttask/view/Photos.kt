@@ -4,14 +4,13 @@ import aleskey.vasiliev.goratesttask.R
 import aleskey.vasiliev.goratesttask.databinding.PhotosViewBinding
 import aleskey.vasiliev.goratesttask.model.NetworkInstance
 import aleskey.vasiliev.goratesttask.model.NetworkInstance.loadPhotoByURL
+import aleskey.vasiliev.goratesttask.model.SharedData.USERNAME
 import aleskey.vasiliev.goratesttask.model.SharedData.USERS
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.concurrent.thread
-
 
 class Photos : AppCompatActivity() {
 
@@ -22,7 +21,7 @@ class Photos : AppCompatActivity() {
         binding = PhotosViewBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-        val username = intent.getStringExtra("username")
+        val username = intent.getStringExtra(USERNAME)
 
         val id = USERS.firstOrNull { it.name == username }?.id
 

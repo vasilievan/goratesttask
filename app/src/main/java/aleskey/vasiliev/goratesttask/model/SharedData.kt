@@ -14,10 +14,11 @@ object SharedData {
     const val ALBUM_ID = "albumId"
     const val TITLE = "title"
     const val PHOTO_URL = "url"
+    const val USERNAME = "username"
 
     fun openPhotos(textView: TextView) {
         val intent = Intent(APPLICATION_CONTEXT, Photos::class.java).apply {
-            putExtra("username", textView.text)
+            putExtra(USERNAME, textView.text)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
         APPLICATION_CONTEXT.startActivity(intent)

@@ -30,9 +30,5 @@ class Users : AppCompatActivity() {
             layoutManager = LinearLayoutManager(view.context)
             adapter = UsersRecyclerViewAdapter(USERS)
         }
-
-
-
-
     }
 }
