@@ -10,11 +10,15 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
+/** Элементы данного RecyclerView - имена пользователей с сайта.
+ */
+
 class UsersRecyclerViewAdapter(private val dataSet: List<NetworkInstance.User>) :
     RecyclerView.Adapter<UsersRecyclerViewAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val textView: TextView = view.findViewById(username_textview)
+
         init {
             textView.setOnClickListener {
                 openPhotos(it as TextView)

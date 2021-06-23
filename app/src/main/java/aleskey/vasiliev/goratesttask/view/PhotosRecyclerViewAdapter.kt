@@ -5,6 +5,8 @@ import aleskey.vasiliev.goratesttask.R.id.photo
 import aleskey.vasiliev.goratesttask.R.id.photo_title
 import aleskey.vasiliev.goratesttask.R.layout.photo_pattern
 import aleskey.vasiliev.goratesttask.model.NetworkInstance
+import aleskey.vasiliev.goratesttask.model.SharedData.IMAGE_MARGIN
+import aleskey.vasiliev.goratesttask.model.SharedData.PHONE_WIDTH
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +15,10 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
+
+/** Данные на активити формируются динамически с использованием RecyclerView. Элементы данного -
+ * картинка и её подпись.
+ */
 
 class PhotosRecyclerViewAdapter(private val data: ArrayList<NetworkInstance.PhotoInstance>) :
     RecyclerView.Adapter<PhotosRecyclerViewAdapter.ViewHolder>() {
@@ -35,6 +41,8 @@ class PhotosRecyclerViewAdapter(private val data: ArrayList<NetworkInstance.Phot
         }
         viewHolder.textView.text = data[position].title
         viewHolder.imageView.setImageBitmap(data[position].bm)
+        viewHolder.imageView.layoutParams.width = PHONE_WIDTH - IMAGE_MARGIN
+        viewHolder.imageView.layoutParams.height = PHONE_WIDTH - IMAGE_MARGIN
     }
 
     override fun getItemCount() = data.size

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_margin="8dp"
     android:orientation="vertical"
     android:layout_gravity="center"
@@ -12,14 +13,24 @@
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-        <ImageView
-            android:gravity="center"
-            android:id="@+id/photo"
-            android:layout_gravity="center"
+
+        <androidx.cardview.widget.CardView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:contentDescription="@string/just_some_photo">
-        </ImageView>
+            app:cardCornerRadius="10sp"
+            android:layout_margin="5sp"
+            app:cardElevation="5sp"
+            android:outlineAmbientShadowColor="@color/grey">
+            <ImageView
+                android:gravity="center"
+                android:id="@+id/photo"
+                android:layout_gravity="center"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/just_some_photo">
+            </ImageView>
+        </androidx.cardview.widget.CardView>
+
         <ProgressBar
             android:id="@+id/progress_bar"
             android:layout_gravity="center"

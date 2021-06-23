@@ -20,25 +20,38 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 
+/** Класс для работы с сетью. **/
 
 object NetworkInstance {
 
+    /** Пользователь как сущность JSON. */
+
     data class User(val id: Int, val name: String)
+
+    /** Фото как сущность JSON. */
 
     data class Photo(val title: String, val url_string: String)
 
+    /** Фото как изображение с заголовком. Более низкий уровень абстракции, чем предыдущий класс. */
+
     data class PhotoInstance(val title: String?, val bm: Bitmap?)
+
+    /** Используемые URL. */
 
     private const val DATA_SERVER = "https://jsonplaceholder.typicode.com"
     private const val USERS_URL_STRING = "$DATA_SERVER/users"
     private const val PHOTOS_URL_STRING = "$DATA_SERVER/photos"
     private const val ALBUMS_URL_STRING = "$DATA_SERVER/albums"
 
+    /** Проверка на доступность wifi или мобильного Интернета. */
+
     private fun isConnectionAvailable(): Boolean {
         val cm = APPLICATION_CONTEXT.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
         val capabilities = cm.getNetworkCapabilities(cm.activeNetwork)
         return capabilities?.hasCapability(NET_CAPABILITY_INTERNET) == true
     }
+
+    /** Построчное чтение JSON с сайта. */
 
     private fun readLines(httpURLConnection: HttpURLConnection): String {
         val responseContent = StringBuilder()
@@ -47,6 +60,8 @@ object NetworkInstance {
         }
         return responseContent.toString()
     }
+
+    /** Парсинг пользователя в JSON. */
 
     private fun parseUsers(response: String): List<User> {
         val jsonArray = JSONArray(response)
@@ -62,6 +77,8 @@ object NetworkInstance {
         }
         return users
     }
+
+    /** Парсинг принадлежащих пользователю альбомов в JSON. */
 
     private fun parseAlbums(response: String): Map<Int, MutableSet<Int>> {
         val jsonArray = JSONArray(response)
@@ -82,6 +99,8 @@ object NetworkInstance {
         return albums
     }
 
+    /** Парсинг фото по наличию в альбомах конкретного пользователя. */
+
     private fun parsePhotosByID(response: String, ID: Int): List<Photo> {
         val jsonArray = JSONArray(response)
         var index = 0
@@ -100,6 +119,8 @@ object NetworkInstance {
         return photos
     }
 
+    /** Получение JSON c /users и обработка данных */
+
     private suspend fun getDeferredUserDataAsync(): Deferred<List<User>> =
         withContext(Dispatchers.Default) {
             async {
@@ -116,6 +137,8 @@ object NetworkInstance {
                 usernames
             }
         }
+
+    /** Получение JSON c /albums и обработка данных */
 
     private suspend fun getDeferredAlbumsDataAsync(users: List<User>): Deferred<Map<Int, Set<Int>>> =
         withContext(Dispatchers.Default) {
@@ -134,6 +157,8 @@ object NetworkInstance {
             }
         }
 
+    /** Получение JSON c /photos и обработка данных */
+
     private suspend fun getDeferredPhotosDataByIDAsync(ID: Int): Deferred<List<Photo>> =
         withContext(Dispatchers.Default) {
             var photos: List<Photo>? = null
@@ -150,6 +175,8 @@ object NetworkInstance {
                 photos!!
             }
         }
+
+    /** Получение соответствие изображения ссылке. */
 
     private suspend fun loadDeferredPhotoByURLAsync(url_string: String): Deferred<Bitmap> =
         withContext(Dispatchers.Default) {
@@ -170,6 +197,8 @@ object NetworkInstance {
                 myBitmap!!
             }
         }
+
+    /** Аналогично предыдущим методам, за исключением отсутствия Deferred */
 
     fun getPhotosById(id: Int): List<Photo> = runBlocking {
         getDeferredPhotosDataByIDAsync(id).await()
