@@ -1,19 +1,17 @@
 package aleskey.vasiliev.goratesttask.view
 
+import aleskey.vasiliev.goratesttask.databinding.PhotosBinding
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import aleskey.vasiliev.goratesttask.R.layout.photos_fragment
+import androidx.appcompat.app.AppCompatActivity
 
-class Photos : Fragment() {
+class Photos : AppCompatActivity() {
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(photos_fragment, container, false)
+    private lateinit var binding: PhotosBinding
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = PhotosBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
     }
 }

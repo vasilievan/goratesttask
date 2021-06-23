@@ -1,33 +1,29 @@
 package aleskey.vasiliev.goratesttask.model
 
 import aleskey.vasiliev.goratesttask.R.string.network_issue
-import android.content.Context
+import aleskey.vasiliev.goratesttask.model.SharedData.APPLICATION_CONTEXT
 import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.widget.Toast
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
-import kotlin.concurrent.thread
 
 object NetworkInstance {
 
     data class User(val id: Int, val name: String)
 
-    var APPLICATION_CONTEXT: Context? = null
+
     private const val DATA_SERVER = "https://jsonplaceholder.typicode.com"
     private const val USERS_URL_STRING = "$DATA_SERVER/users"
     private const val PHOTOS_URL_STRING = "$DATA_SERVER/photos"
     private const val ALBUMS_URL_STRING = "$DATA_SERVER/albums"
 
     private fun isConnectionAvailable(): Boolean {
-        val cm = APPLICATION_CONTEXT!!.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        val cm = APPLICATION_CONTEXT.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
         val capabilities = cm.getNetworkCapabilities(cm.activeNetwork)
         return capabilities?.hasCapability(NET_CAPABILITY_INTERNET) == true
     }
@@ -55,24 +51,23 @@ object NetworkInstance {
         return users
     }
 
-    fun getUsernames(): List<User>? {
-        var usernames: List<User>? = null
-        val usersUrl = URL(USERS_URL_STRING)
-        if (isConnectionAvailable()) {
-            thread {
-                GlobalScope.launch(Dispatchers.Main) {
-                    val getOperation = async(Dispatchers.IO) {
-                        with(usersUrl.openConnection() as HttpURLConnection) {
-                            readLines(this)
-                        }
-                    }
-                    val response: String = getOperation.await()
-                    usernames = parseUsers(response)
+    suspend fun getDeferredData(): Deferred<List<User>> = withContext(Dispatchers.Default) {
+        async {
+            val usernames: MutableList<User> = mutableListOf()
+            val usersUrl = URL(USERS_URL_STRING)
+            if (isConnectionAvailable()) {
+                with(usersUrl.openConnection() as HttpURLConnection) {
+                    val response = readLines(this)
+                    usernames.addAll(parseUsers(response))
                 }
+            } else {
+                Toast.makeText(APPLICATION_CONTEXT, network_issue, Toast.LENGTH_LONG).show()
             }
-        } else {
-            Toast.makeText(APPLICATION_CONTEXT, network_issue, Toast.LENGTH_LONG).show()
+            usernames
         }
-        return usernames
+    }
+
+    fun getUsers(): List<User> = runBlocking {
+        getDeferredData().await()
     }
 }
