@@ -44,9 +44,8 @@ class Photos : AppCompatActivity() {
             thread {
                 for (index in photoslist.indices) {
                     val bm = loadPhotoByURL(photoslist[index].url_string)
-                    myData[index] = NetworkInstance.PhotoInstance(photoslist[index].title, bm)
                     runOnUiThread {
-                        myAdapter.notifyDataSetChanged()
+                        myAdapter.update(index, photoslist[index], bm)
                     }
                 }
                 BITMAPS_TO_USERS?.set(id, myData)

@@ -42,6 +42,9 @@ object NetworkInstance {
     private const val USERS_URL_STRING = "$DATA_SERVER/users"
     private const val PHOTOS_URL_STRING = "$DATA_SERVER/photos"
     private const val ALBUMS_URL_STRING = "$DATA_SERVER/albums"
+    private const val INTENET_CLIENT = "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2"
+    private const val USER_AGENT = "User-Agent"
+
 
     /** Проверка на доступность wifi или мобильного Интернета. */
 
@@ -185,8 +188,8 @@ object NetworkInstance {
                 if (isConnectionAvailable()) {
                     with(URL(url_string).openConnection() as HttpURLConnection) {
                         this.setRequestProperty(
-                            "User-Agent",
-                            "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2"
+                            USER_AGENT,
+                            INTENET_CLIENT
                         )
                         val input = this.inputStream
                         myBitmap = BitmapFactory.decodeStream(input)

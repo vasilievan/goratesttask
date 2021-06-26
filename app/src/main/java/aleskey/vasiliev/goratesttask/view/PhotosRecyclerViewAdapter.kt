@@ -7,6 +7,7 @@ import aleskey.vasiliev.goratesttask.R.layout.photo_pattern
 import aleskey.vasiliev.goratesttask.model.NetworkInstance
 import aleskey.vasiliev.goratesttask.model.SharedData.IMAGE_MARGIN
 import aleskey.vasiliev.goratesttask.model.SharedData.PHONE_WIDTH
+import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -46,4 +47,9 @@ class PhotosRecyclerViewAdapter(private val data: ArrayList<NetworkInstance.Phot
     }
 
     override fun getItemCount() = data.size
+
+    fun update(index: Int, photo: NetworkInstance.Photo, bm: Bitmap) {
+        data[index] = NetworkInstance.PhotoInstance(photo.title, bm)
+        notifyDataSetChanged()
+    }
 }
