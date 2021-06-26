@@ -13,6 +13,7 @@ import android.util.DisplayMetrics
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlin.concurrent.thread
 
 /**
  * Тестовое приложение для GORA Studio. Представляет собой галерею для заданных пользователей
@@ -35,12 +36,16 @@ class Users : AppCompatActivity() {
         APPLICATION_CONTEXT = applicationContext
         setPhoneWidth()
         val recyclerView = view.getViewById(users_recyclerview) as RecyclerView
-        USERS = getUsers()
-        ALBUMS = getAlbums(USERS)
-        recyclerView.apply {
-            setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(view.context)
-            adapter = UsersRecyclerViewAdapter(USERS)
+        thread {
+            USERS = getUsers()
+            ALBUMS = getAlbums(USERS)
+            runOnUiThread {
+                recyclerView.apply {
+                    setHasFixedSize(true)
+                    layoutManager = LinearLayoutManager(view.context)
+                    adapter = UsersRecyclerViewAdapter(USERS)
+                }
+            }
         }
     }
 
